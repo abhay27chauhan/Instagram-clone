@@ -16,8 +16,10 @@ export function StateProvider({ reducer, initialState, children}){
         return auth.signOut();
     }
 
-    function signup(email, password){
-        return auth.createUserWithEmailAndPassword(email, password)
+    async function signup(displayName, email, password){
+        const { user } = await auth.createUserWithEmailAndPassword(email, password)
+        
+        return createUserProfileDocument(user, { displayName });
     }
 
     useEffect(() => {
@@ -28,14 +30,21 @@ export function StateProvider({ reducer, initialState, children}){
                 const userRef = await createUserProfileDocument(userAuth)
 
                 userRef.onSnapshot(snapShot => {
-                    dispatch({type: ACTIONS.SET_USER, user: {
+                    let userData = {
                         id: snapShot.id,
                         ...snapShot.data()
-                    }})
+                    }
+                    console.log(userData)
+                    console.log("setting user");
+                    dispatch({type: ACTIONS.SET_USER, user: userData})
+                    console.log("setting loading to false");
+                    setLoading(false)
+                    console.log("done")
                 });
-                setLoading(false)
             }else{
                 dispatch({type: ACTIONS.SET_USER, user: userAuth})
+                console.log("setting user to null");
+                console.log("setting loading to false");
                 setLoading(false)
             }
         })
@@ -47,7 +56,7 @@ export function StateProvider({ reducer, initialState, children}){
     const value = {login , signout, signup, state, dispatch}
     return (
         <StateContext.Provider value={value}>
-            {console.log("inside auth")}
+            {console.log("inside auth", loading)}
             {!loading && children}
         </StateContext.Provider>
     )

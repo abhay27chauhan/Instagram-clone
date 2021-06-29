@@ -5,20 +5,40 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
 import useStyles from './styles';
 import Input from '../Login/Input';
+import { useStateValue } from '../../context/StateProvider';
 
-const initialState = {email: '', password: ''};
+const initialState = {firstName: '', lastName: '', email: '', password: '', confirmPassword: ''};
 
-function Signup() {
+function Signup(props) {
     const classes = useStyles();
+    const { signup } = useStateValue();
 
     const [form, setForm] = useState(initialState);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleShowPassword = () => setShowPassword(prevShowPassword => !prevShowPassword);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
+        console.log("signup");
         e.preventDefault();
 
+        const { firstName, lastName, email, password, confirmPassword } = form;
+
+        const displayName = `${firstName} ${lastName}`
+
+        if (password !== confirmPassword) {
+            alert("passwords don't match");
+            return;
+        }
+
+        try{
+            await signup(displayName, email, password)
+            setForm(initialState);
+
+            props.history.push("/");
+        }catch(err){
+            console.log("signup", err)
+        }
     }
 
     const handleChange = (e) => {

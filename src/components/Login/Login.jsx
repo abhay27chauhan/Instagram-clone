@@ -19,6 +19,7 @@ function Login(props) {
     const handleShowPassword = () => setShowPassword(prevShowPassword => !prevShowPassword);
 
     const handleSubmit = async (e) => {
+        console.log("login");
         e.preventDefault();
         
         const { email, password } = form;
@@ -28,7 +29,7 @@ function Login(props) {
             setForm({email: '', password: ''})
             props.history.push("/")
         }catch(err){
-            console.error(err);
+            console.error("login", err);
         }
     }
 

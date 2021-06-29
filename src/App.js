@@ -9,12 +9,12 @@ import './App.css';
 import { useStateValue } from './context/StateProvider';
 
 function App() {
-  const { user } = useStateValue();
+  const { state: { user } } = useStateValue();
 
   return (
     <div className="app">
       <Switch>
-        {console.log("inside switch")}
+        {console.log("inside switch", user)}
         <Route path="/profile/:id" render={(props) => user ? (<Profile {...props} />) : (<Redirect to="/login"/>)} />
         <Route path="/login" render={(props) => !user ? (<Login {...props} />) : (<Redirect to="/"/>)} />
         <Route path="/signup" render={(props) => !user ? (<Signup {...props} />) : (<Redirect to="/"/>)} />

@@ -4,7 +4,7 @@ import { Avatar, Button, Paper, Grid, Typography, Container } from '@material-ui
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
 import useStyles from './styles';
-import Input from './Input';
+import CustomInput from './Input';
 import { useStateValue } from '../../context/StateProvider';
 
 const initialState = {email: '', password: ''};
@@ -50,8 +50,8 @@ function Login(props) {
                 </Typography>
                 <form className={classes.form} onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Input name="email" label="Email Address" handleChange={handleChange} type="email" autoFocus />
-                        <Input name="password" label="Password" handleChange={handleChange} type={showPassword ? 'text' : 'password'} handleShowPassword={handleShowPassword} />
+                        <CustomInput name="email" label="Email Address" handleChange={handleChange} type="email" autoFocus />
+                        <CustomInput name="password" label="Password" handleChange={handleChange} type={showPassword ? 'text' : 'password'} handleShowPassword={handleShowPassword} />
                     </Grid>
                     <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
                         Log In

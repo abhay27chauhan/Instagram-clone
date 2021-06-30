@@ -3,7 +3,7 @@ import { TextField, Grid, InputAdornment, IconButton } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
-function Input({ name, handleChange, label, half, autoFocus, type, handleShowPassword }) {
+function CustomInput({ name, handleChange, label, half, autoFocus, type, handleShowPassword }) {
     return (
         <Grid item xs={12} sm={half ? 6 : 12}>
             <TextField
@@ -30,4 +30,4 @@ function Input({ name, handleChange, label, half, autoFocus, type, handleShowPas
     )
 }
 
-export default Input;
+export default CustomInput;

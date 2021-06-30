@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useEffect, useReducer, useState } from 'react';
-import { auth, createUserProfileDocument } from "../firebase/firebase.utils"
+import { auth } from "../firebase/firebase.utils"
 import { ACTIONS } from './reducer';
 
 const StateContext = createContext();
@@ -16,37 +16,20 @@ export function StateProvider({ reducer, initialState, children}){
         return auth.signOut();
     }
 
-    async function signup(displayName, email, password){
-        const { user } = await auth.createUserWithEmailAndPassword(email, password)
-        
-        return createUserProfileDocument(user, { displayName });
+    async function signup(email, password){
+        const { user } = await auth.createUserWithEmailAndPassword(email, password);   
+        return user;
     }
 
     useEffect(() => {
         console.log("inside effect")
-        const unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+        const unsubscribeFromAuth = auth.onAuthStateChanged(userAuth => {
             console.log("inside event listner")
-            if (userAuth) {
-                const userRef = await createUserProfileDocument(userAuth)
-
-                userRef.onSnapshot(snapShot => {
-                    let userData = {
-                        id: snapShot.id,
-                        ...snapShot.data()
-                    }
-                    console.log(userData)
-                    console.log("setting user");
-                    dispatch({type: ACTIONS.SET_USER, user: userData})
-                    console.log("setting loading to false");
-                    setLoading(false)
-                    console.log("done")
-                });
-            }else{
-                dispatch({type: ACTIONS.SET_USER, user: userAuth})
-                console.log("setting user to null");
-                console.log("setting loading to false");
-                setLoading(false)
-            }
+            
+            dispatch({type: ACTIONS.SET_USER, user: userAuth})
+            console.log("setting user");
+            console.log("setting loading to false");
+            setLoading(false)
         })
         return () => {
             unsubscribeFromAuth()

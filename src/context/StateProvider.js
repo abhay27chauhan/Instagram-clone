@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useEffect, useReducer, useState } from 'react';
-import { auth } from "../firebase/firebase.utils"
+import { auth, createUserProfileDocument } from "../firebase/firebase.utils"
 import { ACTIONS } from './reducer';
 
 const StateContext = createContext();
@@ -23,20 +23,34 @@ export function StateProvider({ reducer, initialState, children}){
 
     useEffect(() => {
         console.log("inside effect")
-        const unsubscribeFromAuth = auth.onAuthStateChanged(userAuth => {
+        const unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
             console.log("inside event listner")
-            
-            dispatch({type: ACTIONS.SET_USER, user: userAuth})
-            console.log("setting user");
-            console.log("setting loading to false");
-            setLoading(false)
+
+            if(!userAuth){
+                dispatch({type: ACTIONS.SET_USER, user: userAuth})
+                console.log("setting user");
+                console.log("setting loading to false");
+                setLoading(false)
+            }else{
+                const obj = await createUserProfileDocument(userAuth)
+                const {userRef, snapShot} = obj;
+
+                if(snapShot.exists){
+                    userRef.onSnapshot(snap => {
+                        dispatch({type: ACTIONS.SET_USER, user: {...snap.data()}})
+                        console.log("setting user");
+                        console.log("setting loading to false");
+                        setLoading(false)   
+                    })
+                }
+            }
         })
         return () => {
             unsubscribeFromAuth()
         }
     }, [])
 
-    const value = {login , signout, signup, state, dispatch}
+    const value = {login , signout, signup, setLoading, state, dispatch}
     return (
         <StateContext.Provider value={value}>
             {console.log("inside auth", loading)}

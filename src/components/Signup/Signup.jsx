@@ -8,15 +8,17 @@ import useStyles from './styles';
 import CustomInput from '../Login/Input';
 import { useStateValue } from '../../context/StateProvider';
 import { database, storage } from '../../firebase/firebase.utils';
+import { ACTIONS } from '../../context/reducer';
 
 const initialState = {firstName: '', lastName: '', email: '', password: '', confirmPassword: ''};
 
 function Signup(props) {
     const classes = useStyles();
-    const { signup } = useStateValue();
+    const { signup, dispatch, setLoading } = useStateValue();
 
     const [form, setForm] = useState(initialState);
     const [file, setFile] = useState('');
+    const [loader, setLoader] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleShowPassword = () => setShowPassword(prevShowPassword => !prevShowPassword);
@@ -32,9 +34,9 @@ function Signup(props) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        setLoader(true);
         const { firstName, lastName, email, password, confirmPassword } = form;
         const displayName = `${firstName} ${lastName}`
-        setForm(initialState);
 
         if (password !== confirmPassword) {
             alert("passwords don't match");
@@ -61,17 +63,24 @@ function Signup(props) {
             async function fn3() {
                 // link get 
                 let downloadurl = await uploadTaskListener.snapshot.ref.getDownloadURL();
-                database.users.doc(uid).set({
+                await database.users.doc(uid).set({
                     email: email,
                     userId: uid,
                     displayName,
                     createdAt: database.getUserTimeStamp(),
                     profileUrl: downloadurl
                 })
+
+                dispatch({type: ACTIONS.SET_USER, user: { createdAt: database.getUserTimeStamp(), displayName, email: email, profileUrl: downloadurl, userId: uid } })
+                setLoading(false);
+
+                setForm(initialState);
+                setLoader(false);
                 props.history.push("/")
             }
         }catch(err){
             console.log("signup", err)
+            setLoader(false);
         }
     }
 
@@ -104,7 +113,7 @@ function Signup(props) {
                             Upload
                         </Button>
                     </label>
-                    <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
+                    <Button disabled={loader} type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
                         Sign Up
                     </Button>
                     <Grid container justify="flex-end">

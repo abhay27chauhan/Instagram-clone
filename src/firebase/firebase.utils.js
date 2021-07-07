@@ -16,4 +16,12 @@ export const database = {
     getUserTimeStamp: firebase.firestore.FieldValue.serverTimestamp
 }
 
+export const createUserProfileDocument = async (userAuth) => {
+  const userRef = firestore.doc(`users/${userAuth.uid}`);
+
+  const snapShot = await userRef.get();
+    
+  return {userRef, snapShot};
+};
+
 export default firebase;

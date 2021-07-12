@@ -3,12 +3,13 @@ import { TextField, Grid, InputAdornment, IconButton } from '@material-ui/core';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
-function CustomInput({ name, handleChange, label, half, autoFocus, type, handleShowPassword }) {
+function CustomInput({ name, handleChange, label, half, autoFocus, type, handleShowPassword, value }) {
     return (
         <Grid item xs={12} sm={half ? 6 : 12}>
             <TextField
                 autoComplete="off"
                 name={name}
+                value={value}
                 onChange={handleChange}
                 variant="outlined"
                 required

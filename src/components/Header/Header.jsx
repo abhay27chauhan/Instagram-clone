@@ -1,12 +1,33 @@
-import React from 'react'
-import { AppBar, IconButton, Toolbar, Typography, Badge, Avatar } from '@material-ui/core';
+import React, { useState } from 'react'
+import { withRouter } from 'react-router';
+import { AppBar, IconButton, Toolbar, Typography, Badge, Avatar, Menu, MenuItem } from '@material-ui/core';
 import { useStyles } from './styles';
 import { Notifications } from '@material-ui/icons';
 import { useStateValue } from '../../context/StateProvider';
 
-function Header() {
+function Header(props) {
     const classes = useStyles();
-    const { state: { user }} = useStateValue();
+    const { state: { user }, signout } = useStateValue();
+    const [anchorEl, setAnchorEl] = useState(null)
+
+    const handleChange = (event) => {
+        setAnchorEl(event.currentTarget);
+    }
+
+    const handleClose = async (e) => {
+        let textValue = e.target.textContent;
+        if(textValue === "Profile"){
+            props.history.push(`/profile/${user.userId}`)
+        }else if(textValue === "Logout"){
+            try{
+                await signout()
+                props.history.push("/login");
+            }catch(err){
+                console.log("error ", err);
+            }
+        }
+        setAnchorEl(null);
+    }
 
     return (
         <div>
@@ -23,9 +44,19 @@ function Header() {
                                     <Notifications />
                                 </Badge>
                             </IconButton>
-                            <Avatar className={classes.purple} alt={user.displayName} src={user.profileUrl}>
+                            <Avatar aria-controls="simple-menu" aria-haspopup="true" className={classes.purple} alt={user.displayName} src={user.profileUrl} onClick={handleChange}>
                                 {user.displayName.charAt(0)}
                             </Avatar>
+                            <Menu
+                                id="simple-menu"
+                                anchorEl={anchorEl}
+                                keepMounted
+                                open={Boolean(anchorEl)}
+                                onClose={handleClose}
+                            >
+                                <MenuItem onClick={handleClose} value="profile">Profile</MenuItem>
+                                <MenuItem onClick={handleClose} value="logout">Logout</MenuItem>
+                            </Menu>
                             <Typography className={classes.userName} variant="h6">      
                                 {user.displayName}
                             </Typography>
@@ -37,4 +68,4 @@ function Header() {
     )
 }
 
-export default Header;
+export default withRouter(Header);

@@ -21,5 +21,5 @@ export const useStyles = makeStyles((theme) => ({
   userName: {
     display: 'flex',
     alignItems: 'center',
-  }
+  },
 }));

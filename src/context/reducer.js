@@ -1,9 +1,11 @@
 export const initialState = {
     user: null,
+    post: null
 }
 
 export const ACTIONS = {
     SET_USER: "set-user",
+    SET_POST: "set-post"
 }
 
 const reducer = (state, action) => {
@@ -13,6 +15,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 user: action.user,
+            }
+        case ACTIONS.SET_POST:
+            return {
+                ...state,
+                post: action.post
             }
         default:
             return state;

@@ -23,8 +23,8 @@ function Login(props) {
         console.log("login");
         e.preventDefault();
         
-        const { email, password } = form;
         setLoading(true);
+        const { email, password } = form;
         try{
             await login(email, password);
             setForm({email: '', password: ''})
@@ -58,8 +58,8 @@ function Login(props) {
                         </Typography>
                         <form className={classes.form} onSubmit={handleSubmit}>
                             <Grid container spacing={2}>
-                                <CustomInput name="email" label="Email Address" handleChange={handleChange} type="email" autoFocus />
-                                <CustomInput name="password" label="Password" handleChange={handleChange} type={showPassword ? 'text' : 'password'} handleShowPassword={handleShowPassword} />
+                                <CustomInput name="email" value={form.email} label="Email Address" handleChange={handleChange} type="email" autoFocus />
+                                <CustomInput name="password" value={form.password} label="Password" handleChange={handleChange} type={showPassword ? 'text' : 'password'} handleShowPassword={handleShowPassword} />
                             </Grid>
                             <Button disabled={loading} type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
                                 Log In

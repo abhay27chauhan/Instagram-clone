@@ -63,15 +63,18 @@ function Signup(props) {
             async function fn3() {
                 // link get 
                 let downloadurl = await uploadTaskListener.snapshot.ref.getDownloadURL();
-                await database.users.doc(uid).set({
+
+                let userObj = {
                     email: email,
                     userId: uid,
                     displayName,
                     createdAt: database.getUserTimeStamp(),
-                    profileUrl: downloadurl
-                })
+                    profileUrl: downloadurl,
+                    postIds: []
+                }
+                await database.users.doc(uid).set(userObj)
 
-                dispatch({type: ACTIONS.SET_USER, user: { createdAt: database.getUserTimeStamp(), displayName, email: email, profileUrl: downloadurl, userId: uid } })
+                dispatch({type: ACTIONS.SET_USER, user: userObj})
                 setLoading(false);
 
                 setForm(initialState);
@@ -101,11 +104,11 @@ function Signup(props) {
                 </Typography>
                 <form className={classes.form} onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <CustomInput name="firstName" label="First Name" handleChange={handleChange} autoFocus half />
-                        <CustomInput name="lastName" label="Last Name" handleChange={handleChange} half />
-                        <CustomInput name="email" label="Email Address" handleChange={handleChange} type="email" />
-                        <CustomInput name="password" label="Password" handleChange={handleChange} type={showPassword ? 'text' : 'password'} handleShowPassword={handleShowPassword} />
-                        <CustomInput name="confirmPassword" label="Repeat Password" handleChange={handleChange} type="password" /> 
+                        <CustomInput name="firstName" value={form.firstName} label="First Name" handleChange={handleChange} autoFocus half />
+                        <CustomInput name="lastName" value={form.lastName} label="Last Name" handleChange={handleChange} half />
+                        <CustomInput name="email" value={form.email} label="Email Address" handleChange={handleChange} type="email" />
+                        <CustomInput name="password" value={form.password} label="Password" handleChange={handleChange} type={showPassword ? 'text' : 'password'} handleShowPassword={handleShowPassword} />
+                        <CustomInput name="confirmPassword" value={form.confirmPassword} label="Repeat Password" handleChange={handleChange} type="password" /> 
                     </Grid>
                     <label htmlFor="contained-button-file">
                         <Input className={classes.input} accept="image/*" id="contained-button-file" multiple type="file" onChange={handleFileChange} />

@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useEffect, useReducer, useState } from 'react';
-import { auth, createUserProfileDocument } from "../firebase/firebase.utils"
+import { auth, createUserProfileDocument, database } from "../firebase/firebase.utils"
 import { ACTIONS } from './reducer';
+import Loader from '../components/Loader/Loader'
 
 const StateContext = createContext();
 
@@ -43,6 +44,27 @@ export function StateProvider({ reducer, initialState, children}){
                         setLoading(false)   
                     })
                 }
+
+                let hasPosts = await database.posts.get()
+                if(!hasPosts.empty){
+                    database.posts.orderBy('createdAt', 'desc').onSnapshot(async(snapshot) => {                          
+                        let postsArr = snapshot.docs.map(doc => doc.data());
+                        let newPostArr = [];
+                        for(let i=0; i<postsArr.length; i++){
+                            let obj = postsArr[i];
+
+                            let userRef = database.users.doc(obj.auid);
+                            let udoc = await userRef.get();
+                            obj.user = udoc.data().displayName;
+                            obj.profileUrl = udoc.data().profileUrl;
+        
+                            newPostArr.push(obj);
+                        }
+                        if(postsArr.length > 0){
+                            dispatch({type: ACTIONS.SET_POST, post: newPostArr})
+                        }
+                    });
+                }
             }
         })
         return () => {
@@ -54,7 +76,7 @@ export function StateProvider({ reducer, initialState, children}){
     return (
         <StateContext.Provider value={value}>
             {console.log("inside auth", loading)}
-            {!loading && children}
+            {!loading ? children : (<Loader size={50}/>)}
         </StateContext.Provider>
     )
 }

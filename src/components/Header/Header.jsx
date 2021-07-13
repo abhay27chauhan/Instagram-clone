@@ -30,9 +30,9 @@ function Header(props) {
     }
 
     return (
-        <div>
+        <div className={classes.root}>
             <div className={classes.grow}>
-                <AppBar position="static">
+                <AppBar>
                     <Toolbar className={classes.toolbar}>
                         <Typography variant="h6" noWrap>
                             Instagram

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Input } from '@material-ui/core';
+import React from 'react'
+import { Button, Container, Input } from '@material-ui/core';
 import BackupIcon from '@material-ui/icons/Backup';
 import uuid from 'react-uuid';
 
@@ -7,11 +7,11 @@ import { useStateValue } from '../../context/StateProvider';
 import { database, storage } from '../../firebase/firebase.utils';
 import useStyles from './styles';
 import Header from '../Header/Header'
+import Video from '../Video/Video';
 
 function Feed() {
     const classes = useStyles();
-    const [pageLoading, setPageLoading] = useState(true);
-    const { state: { user } } = useStateValue()
+    const { state: { user, post } } = useStateValue()
 
     const handleFileChange = (e) => {
         e.preventDefault();
@@ -60,23 +60,11 @@ function Feed() {
             })
         }
     }
-
-    useEffect(() => {
-        setPageLoading(false);
-
-        return () => {
-            setPageLoading(true);
-        }
-    }, [])
-
     return (
-        pageLoading ?
-            (<div><h1>Loading...</h1></div>)
-            :
-            ( 
-                <div>
-                    {console.log("user ", user)}
-                    <Header />
+            <div>
+                {console.log("user ", user)}
+                <Header />
+                <div className={classes.btnContainer}>
                     <label htmlFor="contained-button-file">
                         <Input className={classes.input} accept="image/*" id="contained-button-file" multiple type="file" onChange={handleFileChange} />
                         <Button startIcon={<BackupIcon />} color="secondary" variant="outlined" component="span" className={classes.file}>
@@ -84,9 +72,23 @@ function Feed() {
                         </Button>
                     </label>
                 </div>
+                <Container className={classes.videoContainer} maxWidth="xs">
+                    {
+                        post.map(obj => (
+                            <div className={classes.video}>
+                                <Video
+                                    dim={classes.video}
+                                    src={obj.downloadurl}
+                                    id={obj.pid}
+                                    username={obj.user}
+                                >
+                                </Video>
+                            </div>
+                        ))
+                    }
+                </Container>
+            </div>
             )
-            
-    )
 }
 
 export default Feed;

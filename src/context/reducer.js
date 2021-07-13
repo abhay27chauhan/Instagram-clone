@@ -1,6 +1,6 @@
 export const initialState = {
     user: null,
-    post: null
+    post: []
 }
 
 export const ACTIONS = {

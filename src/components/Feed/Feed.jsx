@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Container, Input } from '@material-ui/core';
+import { Button, Input } from '@material-ui/core';
 import BackupIcon from '@material-ui/icons/Backup';
 import uuid from 'react-uuid';
 
@@ -72,21 +72,23 @@ function Feed() {
                         </Button>
                     </label>
                 </div>
-                <Container className={classes.videoContainer} maxWidth="xs">
-                    {
-                        post.map(obj => (
-                            <div className={classes.video}>
+                <div className={classes.feedContainer}>
+                    <div className={classes.videoContainer}>
+                        {
+                            post.map((obj, i) => (
                                 <Video
-                                    dim={classes.video}
+                                    key={i}
                                     src={obj.downloadurl}
                                     id={obj.pid}
                                     username={obj.user}
+                                    profileUrl = {obj.profileUrl}
+                                    userId={obj.auid}
                                 >
                                 </Video>
-                            </div>
-                        ))
-                    }
-                </Container>
+                            ))
+                        }
+                    </div>
+                </div>
             </div>
             )
 }

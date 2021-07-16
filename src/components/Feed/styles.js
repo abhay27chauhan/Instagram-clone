@@ -7,16 +7,26 @@ export default makeStyles((theme) => ({
   file: {
     margin: theme.spacing(2, 2, 1),
   },
-  video: {
-    marginBottom: "6rem",
-    
-  },
   btnContainer:{
     position: "fixed",
     left: 0,
     top: 65,
   },
+  feedContainer: {
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
   videoContainer:{
-    marginTop: theme.spacing(13)
+    position: "relative",
+    height: "100%",
+    width: "80%",
+    maxWidth: "500px",
+    overflow: "scroll",
+    paddingTop: theme.spacing(12),
+    '&::-webkit-scrollbar': {
+      display: "none"
+    }
   }
 }));

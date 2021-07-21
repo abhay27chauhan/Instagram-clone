@@ -45,9 +45,7 @@ export function StateProvider({ reducer, initialState, children}){
                     })
                 }
 
-                let hasPosts = await database.posts.get()
-                if(!hasPosts.empty){
-                    database.posts.orderBy('createdAt', 'desc').onSnapshot(async(snapshot) => {                          
+                database.posts.orderBy('createdAt', 'desc').onSnapshot(async(snapshot) => {                          
                         let postsArr = snapshot.docs.map(doc => doc.data());
                         let newPostArr = [];
                         for(let i=0; i<postsArr.length; i++){
@@ -60,11 +58,8 @@ export function StateProvider({ reducer, initialState, children}){
         
                             newPostArr.push(obj);
                         }
-                        if(postsArr.length > 0){
-                            dispatch({type: ACTIONS.SET_POST, post: newPostArr})
-                        }
+                        dispatch({type: ACTIONS.SET_POST, post: newPostArr})
                     });
-                }
             }
         })
         return () => {

@@ -17,11 +17,27 @@ export default makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
+  loginForm: {
+    display: "flex",
+    alignItems: "center"
+  },
   form: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(3),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+  },
+  imgcar: {
+    width: "441px",
+    height: "590px",
+    position: "relative"
+  },
+  caro:{
+    height: "423px",
+    width: "241px",
+    position: "absolute",
+    left: "143px",
+    top: "93px"
   }
 }));

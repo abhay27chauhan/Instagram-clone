@@ -28,5 +28,9 @@ export default makeStyles((theme) => ({
     '&::-webkit-scrollbar': {
       display: "none"
     }
-  }
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 }));

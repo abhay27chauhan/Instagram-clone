@@ -2,7 +2,15 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, Button, Paper, Grid, Typography, Container } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { CarouselProvider, Slider, Slide, Image } from 'pure-react-carousel';
+import 'pure-react-carousel/dist/react-carousel.es.css';
 
+import Img1 from '../../Assets/img1.jpg'
+import Img2 from '../../Assets/img2.jpg'
+import Img3 from '../../Assets/img3.jpg'
+import Img4 from '../../Assets/img4.jpg'
+import Img5 from '../../Assets/img5.jpg'
+import Insta from '../../Assets/insta.png'
 import useStyles from './styles';
 import CustomInput from './Input';
 import { useStateValue } from '../../context/StateProvider';
@@ -46,9 +54,44 @@ function Login(props) {
         <Container className={classes.tc} component="main" maxWidth="md">
             <Grid container justify="space-between">
                 <Grid item md={6}>
-                    <Paper elevation={3} ></Paper>
+                    <Paper elevation={3} >
+                        <div className={classes.imgcar} style={{ backgroundImage: `url(` + Insta + `)`, backgroundSize: 'cover' }}>
+                            <div className={classes.caro}>
+                                <CarouselProvider
+                                    visibleSlides={1}
+                                    totalSlides={5}
+                                    step={3}
+                                    naturalSlideWidth={238}
+                                    naturalSlideHeight={423}
+                                    hasMasterSpinner
+                                    isPlaying={true}
+                                    infinite={true}
+                                    dragEnabled={false}
+                                    touchEnabled={false}
+                                >
+                                    <Slider>
+                                        <Slide index={0}>
+                                            <Image src={Img1} />
+                                        </Slide>
+                                        <Slide index={1}>
+                                            <Image src={Img2} />
+                                        </Slide>
+                                        <Slide index={2}>
+                                            <Image src={Img3} />
+                                        </Slide>
+                                        <Slide index={3}>
+                                            <Image src={Img4} />
+                                        </Slide>
+                                        <Slide index={4}>
+                                            <Image src={Img5} />
+                                        </Slide>
+                                    </Slider>
+                                </CarouselProvider>
+                            </div>
+                        </div>
+                    </Paper>
                 </Grid>
-                <Grid item md={5}>
+                <Grid item md={5} className={classes.loginForm}>
                     <Paper className={classes.paper} elevation={3}>
                         <Avatar className={classes.avatar}>
                             <LockOutlinedIcon />

@@ -1,15 +1,19 @@
 import React, { useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 import VideoFooter from '../VideoFooter/VideoFooter';
 import VideoSidebar from '../VideoSidebar/VideoSidebar';
 import { useStyles } from './styles';
 
 export default function Video(props) {
-    const [playing, setPlaying] = useState(true)
+    const [playing, setPlaying] = useState(false)
     const videoRef = useRef(null);
 
     const classes = useStyles();
 
-    const onVideoPress = () => {
+    const onVideoPress = (e) => {
+        if(e.currentTarget !== videoRef.current){
+            return;
+        }
         if (playing) {
             videoRef.current.pause();
             setPlaying(false);
@@ -25,15 +29,28 @@ export default function Video(props) {
             userId: props.userId,
             profileUrl: props.profileUrl,
             username: props.username,
+            postId: props.id
         }
         videoRef.current.pause();
         setPlaying(false);
         props.handleOverlay(videoObject);
     }
 
+    const handleAutoScroll=(e) => {
+        let next = ReactDOM.findDOMNode(e.target).parentNode.nextSibling;
+        if(next)
+        {
+            next.scrollIntoView({behavior:'smooth'});
+            e.target.muted=true;
+            next.children[0].play()
+        }else{
+           ReactDOM.findDOMNode(e.target).parentNode.parentNode.scrollTo(0, 0);
+        }
+    }
+
     return (
         <div className={classes.root}>
-            <video className={classes.video}  onClick={onVideoPress} ref={videoRef} autoPlay loop muted id={props.id}>
+            <video onEnded={handleAutoScroll} className={classes.video}  onClick={onVideoPress} ref={videoRef} muted id={props.id}>
                 <source 
                     src={props.src} 
                     type="video/mp4"

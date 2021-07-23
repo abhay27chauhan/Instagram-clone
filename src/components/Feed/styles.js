@@ -13,10 +13,11 @@ export default makeStyles((theme) => ({
     top: 65,
   },
   feedContainer: {
-    height: "100vh",
+    height: "calc(100vh - 64px)",
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    marginTop: "64px"
   },
   videoContainer:{
     position: "relative",
@@ -24,7 +25,7 @@ export default makeStyles((theme) => ({
     width: "80%",
     maxWidth: "500px",
     overflow: "scroll",
-    paddingTop: theme.spacing(12),
+    paddingTop: "25px",
     '&::-webkit-scrollbar': {
       display: "none"
     }

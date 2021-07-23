@@ -19,7 +19,6 @@ function Feed() {
     const { state: { user, post } } = useStateValue()
 
     const openOverlay = (videoObject) => {
-        console.log(show);
         setVideo(videoObject)
         setShow(true)
     }

@@ -12,7 +12,7 @@ import Img4 from '../../Assets/img4.jpg'
 import Img5 from '../../Assets/img5.jpg'
 import Insta from '../../Assets/insta.png'
 import useStyles from './styles';
-import CustomInput from './Input';
+import CustomInput from '../Input/Input';
 import { useStateValue } from '../../context/StateProvider';
 
 const initialState = {email: '', password: ''};

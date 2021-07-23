@@ -11,8 +11,8 @@ function CustomInput({ name, handleChange, label, half, autoFocus, type, handleS
                 name={name}
                 value={value}
                 onChange={handleChange}
-                variant="outlined"
-                required
+                variant={name === "comment" ? "standard" : "outlined"}
+                required={name !== "comment" ? true : false}
                 fullWidth
                 label={label}
                 autoFocus={autoFocus}

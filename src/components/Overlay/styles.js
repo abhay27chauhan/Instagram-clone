@@ -9,14 +9,16 @@ export const useStyles = makeStyles((theme) => ({
     position: "absolute"
   },
   details: {
+    width: "60%",
     display: 'flex',
     flexDirection: 'column',
   },
   content: {
     flex: '1 0 auto',
+    height: "100%"
   },
   cover: {
-    width: "44%",
+    width: "40%",
   },
   playIcon: {
     height: 38,
@@ -31,4 +33,28 @@ export const useStyles = makeStyles((theme) => ({
     color: theme.palette.getContrastText(deepPurple[500]),
     backgroundColor: deepPurple[500],
   },
+  showComment: {
+    marginTop: theme.spacing(3),
+    borderTop: "1px solid black",
+    padding: theme.spacing(2),
+    height: "73%",
+    overflow: "auto"
+  },
+  comment: {
+    display: "flex",
+    padding: theme.spacing(1),
+    height: "10%",
+  },
+  cbtn:{      
+    marginTop: '5%'
+  },
+  commentDiv: {
+    maxWidth: "100%",
+    display: "flex",
+    margin: "2%",
+  },
+  da:{
+      marginRight:'2%',
+      marginTop:'2%'
+  }
 }));

@@ -9,6 +9,7 @@ export const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   video: {
-    width: "70%"
+    width: "70%",
+    scrollSnapAlign: "start"
   }
 }));

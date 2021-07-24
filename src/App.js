@@ -1,9 +1,9 @@
 import { Redirect, Route, Switch } from 'react-router-dom';
 
-import Profile from './components/Profile/Profile'
-import Feed from './components/Feed/Feed'
-import Login from './components/Login/Login'
-import Signup from './components/Signup/Signup'
+import Profile from './Pages/Profile/Profile'
+import Feed from './Pages/Feed/Feed'
+import Login from './Pages/Login/Login'
+import Signup from './Pages/Signup/Signup'
 
 import './App.css';
 import { useStateValue } from './context/StateProvider';

@@ -5,7 +5,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import BackupIcon from '@material-ui/icons/Backup';
 
 import useStyles from './styles';
-import CustomInput from '../Input/Input';
+import CustomInput from '../../components/Input/Input';
 import { useStateValue } from '../../context/StateProvider';
 import { database, storage } from '../../firebase/firebase.utils';
 import { ACTIONS } from '../../context/reducer';

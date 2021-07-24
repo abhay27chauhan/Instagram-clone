@@ -6,9 +6,9 @@ import uuid from 'react-uuid';
 import { useStateValue } from '../../context/StateProvider';
 import { database, storage } from '../../firebase/firebase.utils';
 import useStyles from './styles';
-import Header from '../Header/Header'
-import Video from '../Video/Video';
-import Overlay from '../Overlay/Overlay';
+import Header from '../../components/Header/Header'
+import Video from '../../components/Video/Video';
+import Overlay from '../../components/Overlay/Overlay';
 
 function Feed() {
     const [Loading, setLoading] = useState(false);

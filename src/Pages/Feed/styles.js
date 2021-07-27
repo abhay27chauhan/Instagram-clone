@@ -26,6 +26,7 @@ export default makeStyles((theme) => ({
     maxWidth: "500px",
     overflow: "scroll",
     paddingTop: "25px",
+    scrollSnapType: "y mandatory",
     '&::-webkit-scrollbar': {
       display: "none"
     }

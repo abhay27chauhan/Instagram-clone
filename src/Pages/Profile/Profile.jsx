@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Avatar, Container, Grid, Typography } from '@material-ui/core';
+import { Avatar, CircularProgress, Container, Grid, Typography } from '@material-ui/core';
 import { useStateValue } from '../../context/StateProvider';
 import { database } from '../../firebase/firebase.utils';
 import Loader from '../../components/Loader/Loader';
 import  { useStyles }  from './styles';
+import PostCard from '../../components/PostCard/PostCard';
 
 function Profile(props) {
     const classes = useStyles();
@@ -36,7 +37,10 @@ function Profile(props) {
             for(let i=0; i<postIds.length; i++){
                 arr.push(post.find(obj => obj.postId === postIds[i]));
             }
-            setUserPosts(arr);
+            console.log("userPost ", arr)
+            if(arr.length > 0){
+                setUserPosts(arr);
+            }
         }
 
     }, [profileId, post])
@@ -60,12 +64,35 @@ function Profile(props) {
                                     <Typography variant="h5">      
                                         {profileUser.displayName}
                                     </Typography>
+                                    <div className={classes.postInfo}>
+                                        <Typography variant="h6">
+                                            {userPosts !== null ? userPosts.length : "0"} posts
+                                        </Typography>
+                                        <Typography variant="h6">
+                                            0 Followers
+                                        </Typography>
+                                        <Typography variant="h6">
+                                            0 Following
+                                        </Typography>
+                                    </div>
                                 </div>
                             </div>
                         </Grid>
                         <Grid item className={classes.submaintwo}>
-                            <div className={classes.postContainer}>
-                            </div>
+                            {
+                                userPosts === null ? <div className={classes.loader}><CircularProgress /></div>
+                                :
+                                (
+                                    <div className={classes.postContainer}>
+                                        {   
+                                            
+                                            userPosts.map(obj => (
+                                                <PostCard {...obj} />
+                                            ))
+                                        }
+                                    </div>
+                                )
+                            }
                         </Grid>
                     </Grid>
                 )

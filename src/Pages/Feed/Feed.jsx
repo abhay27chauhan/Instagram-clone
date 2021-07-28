@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Backdrop, Button, CircularProgress, Input } from '@material-ui/core';
 import BackupIcon from '@material-ui/icons/Backup';
 import uuid from 'react-uuid';
@@ -88,6 +88,37 @@ function Feed() {
             setLoading(false);
         }
     }
+    const callback = async entries => {
+        entries.forEach(element => {
+            let el = element.target.childNodes[0];
+            // el.play is asynchronous
+            el.play().then(() => {
+                if ( !el.paused && element.isIntersecting != true) {
+                    el.pause();
+                }
+            })
+        });
+    };
+
+    const observer = new IntersectionObserver(callback, {
+        root: null,
+        threshold: 0.9,
+    });
+
+    useEffect(() => {
+        if (typeof window == 'object') {
+            let elements = document.querySelectorAll('.videos')
+            elements.forEach(el => {
+                observer.observe(el);
+            })
+          
+            return () =>{
+                observer.disconnect();
+                console.log('removed');      
+            } 
+        }
+    }, [post]);
+
     return (
             <div>
                 <Header />
@@ -100,11 +131,12 @@ function Feed() {
                     </label>
                 </div>
                 <div ref={feedRef} className={classes.feedContainer} onClick={closeOverlay}>
+                    {console.log("feed ", post)}
                     <div className={classes.videoContainer}>
                         {
                             post.map((obj, i) => (
                                 <Video
-                                    key={i}
+                                    key={obj.postId}
                                     src={obj.downloadurl}
                                     id={obj.postId}
                                     username={obj.user}

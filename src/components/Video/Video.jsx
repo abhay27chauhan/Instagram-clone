@@ -49,7 +49,7 @@ export default function Video(props) {
     }
 
     return (
-        <div className={classes.root}>
+        <div className={`${classes.root} videos`}>
             <video onEnded={handleAutoScroll} className={classes.video}  onClick={onVideoPress} ref={videoRef} muted id={props.id}>
                 <source 
                     src={props.src} 

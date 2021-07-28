@@ -86,8 +86,8 @@ function Profile(props) {
                                     <div className={classes.postContainer}>
                                         {   
                                             
-                                            userPosts.map(obj => (
-                                                <PostCard {...obj} />
+                                            userPosts.map(obj=> (
+                                                <PostCard key={obj.postId} {...obj} />
                                             ))
                                         }
                                     </div>

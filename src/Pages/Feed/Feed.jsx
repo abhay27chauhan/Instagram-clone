@@ -131,17 +131,12 @@ function Feed() {
                     </label>
                 </div>
                 <div ref={feedRef} className={classes.feedContainer} onClick={closeOverlay}>
-                    {console.log("feed ", post)}
                     <div className={classes.videoContainer}>
                         {
                             post.map((obj, i) => (
                                 <Video
                                     key={obj.postId}
-                                    src={obj.downloadurl}
-                                    id={obj.postId}
-                                    username={obj.user}
-                                    profileUrl = {obj.profileUrl}
-                                    userId={obj.auid}
+                                    {...obj}
                                     handleOverlay={openOverlay}
                                 >
                                 </Video>

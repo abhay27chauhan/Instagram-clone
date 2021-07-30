@@ -25,11 +25,11 @@ export default function Video(props) {
 
     const sendDataToOverlay = () => {
         let videoObject = {
-            src: props.src,
-            userId: props.userId,
+            src: props.downloadurl,
+            userId: props.auid,
             profileUrl: props.profileUrl,
-            username: props.username,
-            postId: props.id
+            username: props.user,
+            postId: props.postId
         }
         videoRef.current.pause();
         setPlaying(false);
@@ -52,13 +52,13 @@ export default function Video(props) {
         <div className={`${classes.root} videos`}>
             <video onEnded={handleAutoScroll} className={classes.video}  onClick={onVideoPress} ref={videoRef} muted id={props.id}>
                 <source 
-                    src={props.src} 
+                    src={props.downloadurl} 
                     type="video/mp4"
                 >
                 </source>
             </video>
-            <VideoFooter userId={props.userId} profileUrl={props.profileUrl} username={props.username} />
-            <VideoSidebar pid = {props.id} sendDateToOverlay={sendDataToOverlay} />
+            <VideoFooter userId={props.auid} profileUrl={props.profileUrl} username={props.user} />
+            <VideoSidebar pid = {props.postId} likes={props.likes} comments={props.comments} sendDateToOverlay={sendDataToOverlay} />
         </div>
     )
 }

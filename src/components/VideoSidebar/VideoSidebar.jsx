@@ -6,16 +6,13 @@ import MessageIcon from "@material-ui/icons/Message";
 import { useStyles } from './styles';
 import { useStateValue } from "../../context/StateProvider";
 import { database } from "../../firebase/firebase.utils";
+import { Typography } from "@material-ui/core";
 
 function VideoSidebar(props) {
-  const { state: { user, post } } = useStateValue()
+  const { state: { user } } = useStateValue()
   const [liked, setLiked] = useState(() => {
-    for(let i=0; i<post.length; i++){
-      if(post[i].postId === props.pid){
-        if(post[i].likes.includes(user.userId)){
-          return true;
-        }
-      }
+    if(props.likes.includes(user.userId)){
+        return true;
     }
     return false;
   });
@@ -23,19 +20,15 @@ function VideoSidebar(props) {
 
   const handleLike = async () => {
     console.log("handle like")
-    for(let i=0; i<post.length; i++){
-      if(post[i].postId === props.pid){
-        if(post[i].likes.includes(user.userId)){
-            let likeArr = post[i].likes.filter(id => id !== user.userId)
-            await database.posts.doc(props.pid).update({
-              likes: likeArr
-            })
-        }else{
-          await database.posts.doc(props.pid).update({
-              likes: [...post[i].likes, user.userId]
-          })
-        }
-      }
+    if(props.likes.includes(user.userId)){
+        let likeArr = props.likes.filter(id => id !== user.userId)
+        await database.posts.doc(props.pid).update({
+          likes: likeArr
+        })
+    }else{
+      await database.posts.doc(props.pid).update({
+          likes: [...props.likes, user.userId]
+      })
     }
     setLiked((preState) => {
       return !preState
@@ -46,16 +39,29 @@ function VideoSidebar(props) {
     <div className={classes.videoSidebar}>
       <div className={classes.button}>
         {liked ? (
-          <FavoriteIcon fontSize="large" onClick={handleLike} />
+          <div>
+            <FavoriteIcon fontSize="large" onClick={handleLike} />
+            <Typography variant="body2" component="p">
+              {props.likes.length}
+            </Typography>
+          </div>
         ) : (
-          <FavoriteBorderIcon
-            fontSize="large"
-            onClick={handleLike}
-          />
+          <div>
+            <FavoriteBorderIcon
+              fontSize="large"
+              onClick={handleLike}
+            />
+            <Typography variant="body2" component="p">
+              {props.likes.length}
+            </Typography>
+          </div>
         )}
       </div>
       <div className={classes.button}>
         <MessageIcon fontSize="large" onClick={props.sendDateToOverlay} />
+        <Typography variant="body2" component="p">
+          {props.comments.length}
+        </Typography>
       </div>
       <div className={classes.button}>
           <img

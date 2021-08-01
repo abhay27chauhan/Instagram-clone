@@ -52,8 +52,8 @@ function Login(props) {
     
     return (
         <Container className={classes.tc} component="main" maxWidth="md">
-            <Grid container justify="space-between">
-                <Grid item md={6}>
+            <Grid container className={classes.gridContainer}>
+                <Grid item md={6} className={classes.carContainer}>
                     <Paper elevation={3} >
                         <div className={classes.imgcar} style={{ backgroundImage: `url(` + Insta + `)`, backgroundSize: 'cover' }}>
                             <div className={classes.caro}>
@@ -91,7 +91,7 @@ function Login(props) {
                         </div>
                     </Paper>
                 </Grid>
-                <Grid item md={5} className={classes.loginForm}>
+                <Grid item md={5} className={classes.loginForm} >
                     <Paper className={classes.paper} elevation={3}>
                         <Avatar className={classes.avatar}>
                             <LockOutlinedIcon />

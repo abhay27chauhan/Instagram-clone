@@ -1,16 +1,11 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export default makeStyles((theme) => ({
-  input:{
-    display: 'none'
-  },
-  file: {
-    margin: theme.spacing(2, 2, 1),
-  },
-  btnContainer:{
+  formContainer:{
     position: "fixed",
-    left: 0,
-    top: 65,
+    left: 43,
+    top: 110,
+    width: "371px"
   },
   feedContainer: {
     height: "calc(100vh - 64px)",

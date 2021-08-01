@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Backdrop, Button, CircularProgress, Input } from '@material-ui/core';
-import BackupIcon from '@material-ui/icons/Backup';
+import { Backdrop, CircularProgress } from '@material-ui/core';
 import uuid from 'react-uuid';
 
 import { useStateValue } from '../../context/StateProvider';
@@ -9,6 +8,7 @@ import useStyles from './styles';
 import Header from '../../components/Header/Header'
 import Video from '../../components/Video/Video';
 import Overlay from '../../components/Overlay/Overlay';
+import Form from '../../components/Form/Form';
 
 function Feed() {
     const [Loading, setLoading] = useState(false);
@@ -30,23 +30,12 @@ function Feed() {
         }
     }
 
-    const handleFileChange = (e) => {
-        e.preventDefault();
-        let file = e?.target?.files[0];
-        if(file != null){
-            console.log("file ", file)
-        }else{
-            return;
-        }
-
-        if (file.size / (1024 * 1024) > 20) {
-            alert("The selected file is very big");
-            return;
-        }
-        
+    const handleSubmit = ({title, message, tags, selectedFile}) => {
         let pid = uuid();
         setLoading(true);
-        const uploadTaskListener = storage.ref(`/posts/${pid}`).put(file);
+        const uploadTaskListener = storage
+          .ref(`/posts/${pid}`)
+          .put(selectedFile);
 
         // fn1 -> progress
         // fn2 -> error 
@@ -67,13 +56,16 @@ function Feed() {
             let downloadurl = await uploadTaskListener.snapshot.ref.getDownloadURL();
 
             let postObj = {
-                comments: [],
-                likes: [],
-                downloadurl,
-                auid: user.userId,
-                postId: pid,
-                createdAt: database.getUserTimeStamp(),
-            }
+              comments: [],
+              likes: [],
+              title,
+              message,
+              tags,
+              downloadurl,
+              auid: user.userId,
+              postId: pid,
+              createdAt: database.getUserTimeStamp(),
+            };
 
             console.log("setting post....")
             await database.posts.doc(pid).set(postObj)
@@ -122,13 +114,8 @@ function Feed() {
     return (
             <div>
                 <Header />
-                <div className={classes.btnContainer}>
-                    <label htmlFor="contained-button-file">
-                        <Input className={classes.input} accept="image/*" id="contained-button-file" multiple type="file" onChange={handleFileChange} />
-                        <Button startIcon={<BackupIcon />} color="secondary" variant="outlined" component="span" className={classes.file}>
-                            Upload
-                        </Button>
-                    </label>
+                <div className={classes.formContainer}>
+                    <Form handleSubmit={handleSubmit} />
                 </div>
                 <div ref={feedRef} className={classes.feedContainer} onClick={closeOverlay}>
                     <div className={classes.videoContainer}>

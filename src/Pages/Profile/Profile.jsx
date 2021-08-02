@@ -37,13 +37,12 @@ function Profile(props) {
             for(let i=0; i<postIds.length; i++){
                 arr.push(post.find(obj => obj.postId === postIds[i]));
             }
-            console.log("userPost ", arr)
             if(arr.length > 0){
                 setUserPosts(arr);
             }
         }
 
-    }, [profileId, post])
+    }, [profileId, post, user])
 
     console.log(props.match.params.id);
     return (

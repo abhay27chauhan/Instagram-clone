@@ -40,6 +40,8 @@ function Login(props) {
             props.history.push("/")
         }catch(err){
             console.error("login", err);
+            alert("Error: wrong email or password. Try again!!");
+            setForm({ email: "", password: "" });
             setLoading(false);
         }
     }

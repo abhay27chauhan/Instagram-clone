@@ -22,13 +22,13 @@ function VideoFooter(props) {
                 </Link>
             </Typography>
         </div>
-        <p>description of video</p>
+        <p>{props.description || "description of video"}</p>
         <div className={classes.ticker}>
           <MusicNoteIcon className={classes.icon} />
           <Ticker mode="smooth">
             {({ index }) => (
               <>
-                <p>song</p>
+                <p>{props.song || "song"}</p>
               </>
             )}
           </Ticker>

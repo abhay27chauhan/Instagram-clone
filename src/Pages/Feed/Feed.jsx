@@ -30,61 +30,67 @@ function Feed() {
         }
     }
 
-    const handleSubmit = ({title, message, tags, selectedFile}) => {
-        let pid = uuid();
-        setLoading(true);
-        const uploadTaskListener = storage
-          .ref(`/posts/${pid}`)
-          .put(selectedFile);
+    const handleSubmit = (postInfoObj, setPostData) => {
+      if (!postInfoObj.selectedFile) {
+        alert(
+          "No Post is selected. Either you have not selected any file or the file size is too big. Please try again!!"
+        );
+        return;
+      }
+      let pid = uuid();
+      let { selectedFile } = postInfoObj;
+      setLoading(true);
+      const uploadTaskListener = storage.ref(`/posts/${pid}`).put(selectedFile);
 
-        // fn1 -> progress
-        // fn2 -> error 
-        // fn3-> success
-        uploadTaskListener.on('state_changed', fn1, fn2, fn3);
+      // fn1 -> progress
+      // fn2 -> error
+      // fn3-> success
+      uploadTaskListener.on("state_changed", fn1, fn2, fn3);
 
-        function fn1(snapshot) {
+      function fn1(snapshot) {
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(progress);
+      }
+      function fn2(error) {
+        alert("There was an error in uploading the file ", error.message);
+        return;
+      }
+      async function fn3() {
+        // link get
+        let downloadurl =
+          await uploadTaskListener.snapshot.ref.getDownloadURL();
 
-            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log(progress);
-        }
-        function fn2(error) {
-            alert("There was an error in uploading the file ", error.message);
-            return;
-        }
-        async function fn3() {
-            // link get 
-            let downloadurl = await uploadTaskListener.snapshot.ref.getDownloadURL();
+        let postObj = {
+          comments: [],
+          likes: [],
+          song: postInfoObj.title,
+          message: postInfoObj.message,
+          downloadurl,
+          auid: user.userId,
+          postId: pid,
+          createdAt: database.getUserTimeStamp(),
+        };
 
-            let postObj = {
-              comments: [],
-              likes: [],
-              title,
-              message,
-              tags,
-              downloadurl,
-              auid: user.userId,
-              postId: pid,
-              createdAt: database.getUserTimeStamp(),
-            };
+        console.log("setting post....");
+        await database.posts.doc(pid).set(postObj);
 
-            console.log("setting post....")
-            await database.posts.doc(pid).set(postObj)
+        console.log("updating user....");
 
-            console.log("updating user....")
+        await database.users.doc(user.userId).update({
+          postIds: [...user.postIds, pid],
+        });
 
-            await database.users.doc(user.userId).update({
-                postIds: [...user.postIds, pid]
-            })
-
-            console.log("setting loading to false....")
-            setLoading(false);
-        }
-    }
+        console.log("setting loading to false....");
+        setPostData({ title: "", message: "", selectedFile: "" });
+        setLoading(false);
+      }
+    };
     const callback = async entries => {
         entries.forEach(element => {
             let el = element.target.childNodes[0];
             // el.play is asynchronous
             el.play().then(() => {
+
                 if ( !el.paused && element.isIntersecting != true) {
                     el.pause();
                 }
@@ -106,7 +112,6 @@ function Feed() {
           
             return () =>{
                 observer.disconnect();
-                console.log('removed');      
             } 
         }
     }, [post]);

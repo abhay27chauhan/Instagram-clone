@@ -8,13 +8,12 @@ function Form({ handleSubmit }) {
   const [postData, setPostData] = useState({
     title: "",
     message: "",
-    tags: "",
     selectedFile: "",
   });
   const classes = useStyles();
 
   const clear = () => {
-    setPostData({ title: "", message: "", tags: "", selectedFile: "" });
+    setPostData({ title: "", message: "", selectedFile: "" });
   };
 
   const handleFileChange = (e) => {
@@ -40,7 +39,7 @@ function Form({ handleSubmit }) {
         autoComplete="off"
         noValidate
         className={`${classes.root} ${classes.form}`}
-        onSubmit={() => handleSubmit(postData)}
+        onSubmit={(e) => { e.preventDefault(); return handleSubmit(postData, setPostData);}}
       >
         <Typography variant="h6">Creating a Reel</Typography>
         <TextField
@@ -61,16 +60,6 @@ function Form({ handleSubmit }) {
           value={postData.message}
           onChange={(e) =>
             setPostData({ ...postData, message: e.target.value })
-          }
-        />
-        <TextField
-          name="tags"
-          variant="outlined"
-          label="Tags (coma separated)"
-          fullWidth
-          value={postData.tags}
-          onChange={(e) =>
-            setPostData({ ...postData, tags: e.target.value.split(",") })
           }
         />
         <div className={classes.fileInput}>

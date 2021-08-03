@@ -4,7 +4,8 @@ export const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     height: "390px",
-    width: "30%"
+    width: "30%",
+    minWidth: "240px"
   },
   cover: {
     width: "100%",

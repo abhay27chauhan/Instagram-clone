@@ -55,6 +55,8 @@ export default function Video(props) {
         onClick={onVideoPress}
         ref={videoRef}
         id={props.id}
+        muted
+        autoPlay
       >
         <source src={props.downloadurl} type="video/mp4"></source>
       </video>

@@ -29,6 +29,16 @@ function VideoSidebar(props) {
       await database.posts.doc(props.pid).update({
           likes: [...props.likes, user.userId]
       })
+      if(user.userId !== props.userId){
+        await database.notifications.add({
+          sender: user.userId,
+          recipient: props.userId,
+          createdAt: database.getUserTimeStamp(),
+          type: "like",
+          read: false,
+          postId: props.pid
+        })
+      }
     }
     setLiked((preState) => {
       return !preState

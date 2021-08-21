@@ -8,6 +8,8 @@ import {
   DialogTitle,
 } from "@material-ui/core";
 
+import { database } from "../../firebase/firebase.utils";
+
 import {useStyles} from './styles';
 
 function EditDetails({ open, setOpen, profileId}) {
@@ -15,7 +17,6 @@ function EditDetails({ open, setOpen, profileId}) {
     bio: "",
     website: "",
     location: "",
-    open: false,
   });
   const classes = useStyles();
 
@@ -28,8 +29,21 @@ function EditDetails({ open, setOpen, profileId}) {
     setUserDetails({ ...userDetails, [name]: value });
   };
 
-  const handleSubmit = () => {
-      
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      setOpen(false);
+
+      try{
+        await database.users.doc(profileId).update({
+          bio: userDetails.bio,
+          location: userDetails.location,
+          website: userDetails.website
+        })
+      }catch(err){
+        console.log(err.message);
+        alert("unable to update " + err.message)
+      }
+
   };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">

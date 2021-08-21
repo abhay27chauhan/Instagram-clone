@@ -5,6 +5,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import { Avatar, Button } from '@material-ui/core';
 import { Link } from 'react-router-dom';
+
 import { useStyles } from './styles'
 import CustomInput from '../Input/Input';
 import { database } from '../../firebase/firebase.utils';
@@ -37,6 +38,16 @@ export default function Overlay({ videoObj }) {
       await database.posts.doc(videoObj.postId).update({
           comments: [...postData.comments, docRef.id]
       })
+      if(user.userId !== videoObj.username){
+        await database.notifications.add({
+          sender: user.userId,
+          recipient: videoObj.username,
+          createdAt: database.getUserTimeStamp(),
+          type: "comment",
+          read: false,
+          postId: videoObj.postId
+        })
+      }
     }catch(err){
       console.log(err.message)
     }

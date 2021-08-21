@@ -12,11 +12,12 @@ import Form from '../../components/Form/Form';
 
 function Feed() {
     const [Loading, setLoading] = useState(false);
-    const feedRef = useRef(null)
     const [video, setVideo] = useState({})
     const [show, setShow] = useState(false)
-    const classes = useStyles();
+    const feedRef = useRef(null)
     const { state: { user, post } } = useStateValue()
+
+    const classes = useStyles();
 
     const openOverlay = (videoObject) => {
         setVideo(videoObject)
@@ -82,7 +83,7 @@ function Feed() {
 
         console.log("setting loading to false....");
         setPostData({ title: "", message: "", selectedFile: "" });
-        setLoading(false);
+        // setLoading(false);
       }
     };
     const callback = async entries => {
@@ -109,7 +110,11 @@ function Feed() {
             elements.forEach(el => {
                 observer.observe(el);
             })
-          
+
+            if(Loading){
+                setLoading(false);
+            }
+            
             return () =>{
                 observer.disconnect();
             } 

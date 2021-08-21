@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { withRouter } from 'react-router';
-import { AppBar, IconButton, Toolbar, Typography, Badge, Avatar, Menu, MenuItem } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Avatar, Menu, MenuItem } from '@material-ui/core';
+
+import Notifications from '../Notifications/Notifications'
 import { useStyles } from './styles';
-import { Notifications } from '@material-ui/icons';
 import { useStateValue } from '../../context/StateProvider';
+import { database } from '../../firebase/firebase.utils';
 
 function Header(props) {
+    const [notData, setNotData] = useState([]);
     const classes = useStyles();
     const { state: { user }, signout } = useStateValue();
     const [anchorEl, setAnchorEl] = useState(null)
@@ -29,6 +32,21 @@ function Header(props) {
         setAnchorEl(null);
     }
 
+    useEffect(() => {
+        const unsub = database.notifications.onSnapshot(snapshot => {
+            const arrOfNotObj = snapshot.docs.map(doc => {
+                 return {notificationId: doc.id, ...doc.data()}
+            })
+            if(arrOfNotObj.length){
+                setNotData(arrOfNotObj);
+            }
+         })
+
+        return () => {
+            unsub()
+        }
+    }, [])
+
     return (
         <div className={classes.root}>
             <div className={classes.grow}>
@@ -39,11 +57,7 @@ function Header(props) {
                         </Typography>
                         <div className={classes.grow} />
                         <div className={classes.sectionDesktop}>
-                            <IconButton aria-label="show 17 new notifications" color="inherit">
-                                <Badge badgeContent={17} color="secondary">
-                                    <Notifications />
-                                </Badge>
-                            </IconButton>
+                            <Notifications notifications={notData} />
                             <Avatar aria-controls="simple-menu" aria-haspopup="true" className={classes.purple} alt={user.displayName} src={user.profileUrl} onClick={handleChange}>
                                 {user.displayName.charAt(0)}
                             </Avatar>

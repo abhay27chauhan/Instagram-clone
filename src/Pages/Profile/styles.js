@@ -1,18 +1,14 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
-  root: {
-    minHeight: "100vh",
-  },
   main: {
-    height: "100%",
+    width: "100%",
   },
   submain: {
     width: "100%",
-    height: "161px",
+    minHeight: "161px",
   },
   submaintwo: {
-    minHeight: "calc(100vh - 161px)",
     width: "100%",
   },
   infoContainer: {
@@ -53,6 +49,21 @@ export const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "center",
     gap: "15px",
+  },
+  location: {
+    display: "flex",
+    width: "70px",
+    alignItems: "center",
+    justifyContent: "space-between"
+  },
+  website: {
+    display: "flex",
+    width: "140px",
+    alignItems: "center",
+    gap: "0.7rem",
+    '& a': {
+      color: 'blue'
+    }
   },
   nameContainer: {
     width: "100%",

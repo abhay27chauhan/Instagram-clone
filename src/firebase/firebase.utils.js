@@ -15,6 +15,7 @@ export const database = {
     users: firestore.collection("users"),
     posts: firestore.collection("posts"),
     comments: firestore.collection("comments"),
+    notifications: firestore.collection("notifications"),
     getUserTimeStamp: firebase.firestore.FieldValue.serverTimestamp
 }
 

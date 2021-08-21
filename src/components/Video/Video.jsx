@@ -68,6 +68,7 @@ export default function Video(props) {
         username={props.user}
       />
       <VideoSidebar
+        userId={props.auid}
         pid={props.postId}
         likes={props.likes}
         comments={props.comments}

@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
 import {
   Menu,
   MenuItem,
@@ -11,6 +9,8 @@ import {
 } from "@material-ui/core";
 import { Favorite, Chat } from "@material-ui/icons";
 import NotificationsIcon from "@material-ui/icons/Notifications";
+
+import { database } from '../../firebase/firebase.utils';
 
 function Notifications(props) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -29,8 +29,16 @@ function Notifications(props) {
     let unreadNotificationsIds = props.notifications
       .filter((not) => !not.read)
       .map((not) => not.notificationId);
-    props.markNotificationsRead(unreadNotificationsIds);
+    markNotificationsRead(unreadNotificationsIds);
   };
+
+  const markNotificationsRead = async (notIds) => {
+    for(let i=0; i<notIds.length; i++){
+      await database.notifications.doc(notIds[i]).update({
+            read: true
+      })
+    }
+  }
 
   if (notifications && notifications.length > 0) {
     notifications.filter((not) => not.read === false).length > 0
@@ -64,8 +72,8 @@ function Notifications(props) {
         return (
           <MenuItem key={not.createdAt} onClick={handleClose}>
             {icon}
-            <Typography component={Link} color="default" variant="body1">
-              {not.sender} {verb} your scream
+            <Typography variant="body1">
+              {not.sender} {verb} your post
             </Typography>
           </MenuItem>
         );

@@ -34,9 +34,10 @@ function Header(props) {
 
     useEffect(() => {
         const unsub = database.notifications.onSnapshot(snapshot => {
-            const arrOfNotObj = snapshot.docs.map(doc => {
+            let arrOfNotObj = snapshot.docs.map(doc => {
                  return {notificationId: doc.id, ...doc.data()}
             })
+            arrOfNotObj = arrOfNotObj.filter(not => not.recipient === user.userId);
             if(arrOfNotObj.length){
                 setNotData(arrOfNotObj);
             }

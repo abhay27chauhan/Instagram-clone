@@ -15,7 +15,6 @@ const initialState = {firstName: '', lastName: '', email: '', password: '', conf
 function Signup(props) {
     const classes = useStyles();
     const { signup, dispatch, setLoading } = useStateValue();
-
     const [form, setForm] = useState(initialState);
     const [file, setFile] = useState('');
     const [loader, setLoader] = useState(false);
@@ -70,7 +69,10 @@ function Signup(props) {
                     displayName,
                     createdAt: database.getUserTimeStamp(),
                     profileUrl: downloadurl,
-                    postIds: []
+                    postIds: [],
+                    followers: [],
+                    following: [],
+                    followReqs: {},
                 }
                 await database.users.doc(uid).set(userObj)
 

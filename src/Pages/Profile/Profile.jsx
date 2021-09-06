@@ -25,6 +25,13 @@ function Profile(props) {
     state: { user, post },
   } = useStateValue();
   const [loading, setLoading] = useState(false);
+  const [reqLoading, setReqLoading] = useState(false);
+  const [pending, setPending] = useState(() => {
+    if(Object.keys(user.followReqs).includes(props.match.params.id)){
+      return true;
+    }
+    return false;
+  });
   const [open, setOpen] = useState(false);
   const [profileUser, setProfileUser] = useState(null);
   const [userPosts, setUserPosts] = useState(null);
@@ -33,6 +40,38 @@ function Profile(props) {
   const handleClick = () => {
     setOpen(true);
   };
+
+  const handleFollow = async () => {
+    if(user.following.includes(profileId)){
+      setReqLoading(true);
+      let followReqObj = user.followReqs;
+      let Ids = Object.keys(followReqObj).filter(id => id != profileId);
+      let newReqObj = {}
+      for(let i of Ids){
+        newReqObj[i] = followReqObj[i]
+      }
+      await database.users.doc(user.userId).update({
+        followReqs: newReqObj
+      });
+      setReqLoading(false);
+
+      await database.reqNotifications.doc(followReqObj[profileId]).delete();
+    }else{
+      console.log("1 follow request sent");
+      setPending(true);
+      setReqLoading(true);
+      let docRef = await database.reqNotifications.add({
+        sender: user.userId,
+        recipient: profileId,
+        createdAt: database.getUserTimeStamp(),
+        type: "request",
+      })
+      await database.users.doc(user.userId).update({
+        followReqs: {...user.followReqs, [profileId]: docRef.id}
+      });
+      setReqLoading(false);
+    }
+  }
 
   const handleFileChange = (e) => {
     e.preventDefault();
@@ -68,6 +107,11 @@ function Profile(props) {
       });
       fetchPosts(user);
     } else {
+      if(Object.keys(user.followReqs).includes(props.match.params.id)){
+        setPending(true)
+      }else{
+        setPending(false);
+      }
       fetchUser().then((userData) => fetchPosts(userData));
     }
 
@@ -156,6 +200,16 @@ function Profile(props) {
                       Edit Profile
                     </Button>
                   )}
+                  {profileId !== user.userId && (
+                    <Button
+                      onClick={handleFollow}
+                      color={pending ? "default" : user.following.includes(profileId) ? "secondary" : "primary"}
+                      variant={pending ? "outlined" : "contained"}
+                      disabled={reqLoading}
+                    >
+                      {pending ? "pending": user.following.includes(profileId) ? "Unfollow" : "Follow"}
+                    </Button>
+                  )}
                 </div>
                 <div>
                   {profileUser.bio && <Typography variant="body2">{profileUser.bio}</Typography>}
@@ -188,8 +242,8 @@ function Profile(props) {
                   <Typography variant="h6">
                     {userPosts !== null ? userPosts.length : "0"} posts
                   </Typography>
-                  <Typography variant="h6">0 Followers</Typography>
-                  <Typography variant="h6">0 Following</Typography>
+                  <Typography variant="h6">{profileUser.followers.length} Followers</Typography>
+                  <Typography variant="h6">{profileUser.following.length} Following</Typography>
                 </div>
               </div>
             </div>

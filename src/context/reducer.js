@@ -1,11 +1,13 @@
 export const initialState = {
     user: null,
-    post: []
+    post: [],
+    followReqNotifications: []
 }
 
 export const ACTIONS = {
     SET_USER: "set-user",
-    SET_POST: "set-post"
+    SET_POST: "set-post",
+    SET_NOT: "set-not"
 }
 
 const reducer = (state, action) => {
@@ -20,6 +22,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 post: action.post
+            }
+        case ACTIONS.SET_NOT:
+            return {
+                ...state,
+                followReqNotifications: action.not
             }
         default:
             return state;

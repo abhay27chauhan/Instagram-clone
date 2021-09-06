@@ -6,11 +6,12 @@ import Notifications from '../Notifications/Notifications'
 import { useStyles } from './styles';
 import { useStateValue } from '../../context/StateProvider';
 import { database } from '../../firebase/firebase.utils';
+import FollowNotifications from '../FollowNotifications/FollowNotifications';
 
 function Header(props) {
     const [notData, setNotData] = useState([]);
     const classes = useStyles();
-    const { state: { user }, signout } = useStateValue();
+    const { state: { user, followReqNotifications }, signout } = useStateValue();
     const [anchorEl, setAnchorEl] = useState(null)
 
     const handleChange = (event) => {
@@ -38,9 +39,7 @@ function Header(props) {
                  return {notificationId: doc.id, ...doc.data()}
             })
             arrOfNotObj = arrOfNotObj.filter(not => not.recipient === user.userId);
-            if(arrOfNotObj.length){
-                setNotData(arrOfNotObj);
-            }
+            setNotData(arrOfNotObj);
          })
 
         return () => {
@@ -59,6 +58,7 @@ function Header(props) {
                         <div className={classes.grow} />
                         <div className={classes.sectionDesktop}>
                             <Notifications notifications={notData} />
+                            <FollowNotifications notifications={followReqNotifications} user={user} />
                             <Avatar aria-controls="simple-menu" aria-haspopup="true" className={classes.purple} alt={user.displayName} src={user.profileUrl} onClick={handleChange}>
                                 {user.displayName.charAt(0)}
                             </Avatar>

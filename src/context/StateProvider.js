@@ -8,6 +8,7 @@ const StateContext = createContext();
 export function StateProvider({ reducer, initialState, children}){
     const [state, dispatch] = useReducer(reducer, initialState);
     const [loading, setLoading] = useState(true);
+    const { followReqNotifications, user } = state;
 
     function login(email, password) {
         return auth.signInWithEmailAndPassword(email, password);
@@ -36,36 +37,77 @@ export function StateProvider({ reducer, initialState, children}){
                 const obj = await createUserProfileDocument(userAuth)
                 const {userRef, snapShot} = obj;
 
-                if(snapShot.exists){
-                    userRef.onSnapshot(snap => {
+                userRef.onSnapshot(snap => {
+                    if(snapShot.exists){
                         dispatch({type: ACTIONS.SET_USER, user: {...snap.data()}})
                         console.log("setting user");
                         console.log("setting loading to false");
                         setLoading(false)   
-                    })
-                }
-
-                database.posts.orderBy('createdAt', 'desc').onSnapshot(async(snapshot) => {                          
-                        let postsArr = snapshot.docs.map(doc => doc.data());
-                        let newPostArr = [];
-                        for(let i=0; i<postsArr.length; i++){
-                            let obj = postsArr[i];
-
-                            let userRef = database.users.doc(obj.auid);
-                            let udoc = await userRef.get();
-                            obj.user = udoc.data().displayName;
-                            obj.profileUrl = udoc.data().profileUrl;
-        
-                            newPostArr.push(obj);
-                        }
-                        dispatch({type: ACTIONS.SET_POST, post: newPostArr})
-                    });
+                    }
+                })
             }
         })
+        const unsubscribeFromPost = database.posts.orderBy('createdAt', 'desc').onSnapshot(async(snapshot) => {                          
+            let postsArr = snapshot.docs.map(doc => doc.data());
+            let newPostArr = [];
+            for(let i=0; i<postsArr.length; i++){
+                let obj = postsArr[i];
+
+                let userRef = database.users.doc(obj.auid);
+                let udoc = await userRef.get();
+                obj.user = udoc.data().displayName;
+                obj.profileUrl = udoc.data().profileUrl;
+
+                newPostArr.push(obj);
+            }
+            dispatch({type: ACTIONS.SET_POST, post: newPostArr})
+        });
+
+        const unsub = database.reqNotifications.onSnapshot(snapshot => {
+            let arrOfNotObj = snapshot.docs.map(doc => {
+                 return {notificationId: doc.id, ...doc.data()}
+            })
+            dispatch({type: ACTIONS.SET_NOT, not: arrOfNotObj});
+        });
+
         return () => {
-            unsubscribeFromAuth()
+            unsubscribeFromAuth();
+            unsubscribeFromPost();
+            unsub();
         }
     }, [])
+
+    useEffect(() => {
+        const updateFollowReq = async () => {
+            let followReqs = user ? user.followReqs : {};
+            let arrOfIds = Object.keys(followReqs);
+            if(arrOfIds.length === 0) return;
+
+            let filteredData = followReqNotifications.filter(not => (not.recipient === user.userId && not.type !== "request"));
+            if(filteredData.length === 0) return;
+
+            for(let obj of filteredData){   
+                arrOfIds = arrOfIds.filter(id => id !== obj.sender);
+            }
+            let newReqObj = {};
+            for(let id of arrOfIds){
+                newReqObj[id] = followReqs[id];
+            }
+
+            await database.users.doc(user.userId).update({
+                followReqs: newReqObj
+            })
+
+            let acceptedReqs = filteredData.filter(not => not.type === "accept");
+            for(let obj of acceptedReqs){
+                await database.users.doc(user.userId).update({
+                    following: [...user.following, obj.sender]
+                })
+            }
+        }
+
+        updateFollowReq();
+    }, [followReqNotifications, user])
 
     const value = {login , signout, signup, setLoading, state, dispatch}
     return (

@@ -7,14 +7,13 @@ import {
     Typography,
     Badge,
 } from "@material-ui/core";
-import { Person, Close, Done } from "@material-ui/icons";
+import { Person, Close, Done, Delete } from "@material-ui/icons";
 import GroupIcon from '@material-ui/icons/Group';
 import { database } from '../../firebase/firebase.utils';
 
 function FollowNotifications(props) {
     const [anchorEl, setAnchorEl] = useState(null);
-    const notifications = props.notifications.filter(not => (not.recipient === props.user.userId && not.type !== "reject"));
-    console.log("6 notifications", notifications)
+    const notifications = props.notifications.filter(not => (not.recipient === props.user.userId && not.type !== "reject" && not.type !== "remove"));
     let groupIcon;
 
     const handleOpen = (event) => {
@@ -26,7 +25,6 @@ function FollowNotifications(props) {
     };
 
     const rejReq = async (not) => {
-        console.log("reject")
         await database.reqNotifications.add({
             sender: not.recipient,
             recipient: not.sender,
@@ -37,7 +35,6 @@ function FollowNotifications(props) {
     }
 
     const accReq = async (not) => {
-        console.log("accept")
         await database.reqNotifications.add({
             sender: not.recipient,
             recipient: not.sender,
@@ -50,18 +47,9 @@ function FollowNotifications(props) {
         await database.reqNotifications.doc(not.notificationId).delete();
     }
 
-    const onMenuOpened = () => {
-        let unreadNotificationsIds = props.notifications
-          .filter((not) => not.type !== "request")
-          .map((not) => not.notificationId);
-        markNotificationsRead(unreadNotificationsIds);
-      };
-    
-      const markNotificationsRead = async (notIds) => {
-        for(let i=0; i<notIds.length; i++){
-          await database.reqNotifications.doc(notIds[i]).delete();
-        }
-      }
+    const delNot = async (not) => {
+        await database.reqNotifications.doc(not.notificationId).delete();
+    }
 
     if (notifications && notifications.length > 0) {
         groupIcon = (
@@ -85,7 +73,7 @@ function FollowNotifications(props) {
                 console.log("7 type ", not.type, verb);
                 const iconColor = not.type !== "request" ? "primary" : "secondary";
                 const icon =  <Person color={iconColor} style={{ marginRight: 10 }} />
-                const rejIcon = not.type === "request" ? <Close style={{ marginRight: 10 }} onClick={() => rejReq(not)} /> : ""
+                const rejIcon = not.type === "request" ? <Close style={{ marginRight: 10 }} onClick={() => rejReq(not)} /> : <Delete onClick={() => delNot(not)} />
                 const accIcon = not.type === "request" ? <Done onClick={() => accReq(not)} /> : ""
                 return (
                     <MenuItem key={not.createdAt} onClick={handleClose}>
@@ -113,7 +101,7 @@ function FollowNotifications(props) {
                     {groupIcon}
                 </IconButton>
             </Tooltip>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} onEntered={onMenuOpened}>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} >
                 {notificationsMarkup}
             </Menu>
         </div>

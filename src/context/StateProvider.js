@@ -79,30 +79,40 @@ export function StateProvider({ reducer, initialState, children}){
 
     useEffect(() => {
         const updateFollowReq = async () => {
-            let followReqs = user ? user.followReqs : {};
+            if(!user) return;
+            let followReqs = user.followReqs;
             let arrOfIds = Object.keys(followReqs);
-            if(arrOfIds.length === 0) return;
 
             let filteredData = followReqNotifications.filter(not => (not.recipient === user.userId && not.type !== "request"));
             if(filteredData.length === 0) return;
 
             for(let obj of filteredData){   
-                arrOfIds = arrOfIds.filter(id => id !== obj.sender);
-            }
-            let newReqObj = {};
-            for(let id of arrOfIds){
-                newReqObj[id] = followReqs[id];
-            }
+                if(obj.type !== "remove" && arrOfIds.length > 0){
+                    arrOfIds = arrOfIds.filter(id => id !== obj.sender);
+                    let newReqObj = {};
+                    for(let id of arrOfIds){
+                        newReqObj[id] = followReqs[id];
+                    }
 
-            await database.users.doc(user.userId).update({
-                followReqs: newReqObj
-            })
+                    await database.users.doc(user.userId).update({
+                        followReqs: newReqObj
+                    })
 
-            let acceptedReqs = filteredData.filter(not => not.type === "accept");
-            for(let obj of acceptedReqs){
-                await database.users.doc(user.userId).update({
-                    following: [...user.following, obj.sender]
-                })
+                    if(obj.type === "accept"){
+                        await database.users.doc(user.userId).update({
+                            following: [...user.following, obj.sender]
+                        })
+                    }else if(obj.type === "reject"){
+                        await database.reqNotifications.doc(obj.notificationId).delete();
+                    }
+                }else if(obj.type === "remove"){
+                    let followers = user.followers;
+                    followers = followers.filter(id => id !== obj.sender);
+                    await database.users.doc(user.userId).update({
+                        followers: followers
+                    })
+                    await database.reqNotifications.doc(obj.notificationId).delete();
+                }
             }
         }
 

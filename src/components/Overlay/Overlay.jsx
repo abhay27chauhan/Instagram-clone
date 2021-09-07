@@ -41,7 +41,7 @@ export default function Overlay({ videoObj }) {
       if(user.userId !== videoObj.username){
         await database.notifications.add({
           sender: user.userId,
-          recipient: videoObj.username,
+          recipient: videoObj.userId,
           createdAt: database.getUserTimeStamp(),
           type: "comment",
           read: false,

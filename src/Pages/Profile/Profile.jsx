@@ -44,20 +44,20 @@ function Profile(props) {
   const handleFollow = async () => {
     if(user.following.includes(profileId)){
       setReqLoading(true);
-      let followReqObj = user.followReqs;
-      let Ids = Object.keys(followReqObj).filter(id => id != profileId);
-      let newReqObj = {}
-      for(let i of Ids){
-        newReqObj[i] = followReqObj[i]
-      }
+      let following = user.following;
+      let Ids = following.filter(id => id != profileId);
       await database.users.doc(user.userId).update({
-        followReqs: newReqObj
+        following: Ids
       });
       setReqLoading(false);
 
-      await database.reqNotifications.doc(followReqObj[profileId]).delete();
+      await database.reqNotifications.add({
+        sender: user.userId,
+        recipient: profileId,
+        createdAt: database.getUserTimeStamp(),
+        type: "remove",
+      })
     }else{
-      console.log("1 follow request sent");
       setPending(true);
       setReqLoading(true);
       let docRef = await database.reqNotifications.add({

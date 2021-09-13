@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { withRouter } from 'react-router';
-import { AppBar, Toolbar, Typography, Avatar, Menu, MenuItem } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Avatar, Menu, MenuItem, InputBase } from '@material-ui/core';
+import SearchIcon from '@material-ui/icons/Search';
 
 import Notifications from '../Notifications/Notifications'
 import { useStyles } from './styles';
@@ -55,6 +56,20 @@ function Header(props) {
                         <Typography variant="h6" noWrap>
                             Instagram
                         </Typography>
+                        <div className={classes.grow} />
+                        <div className={classes.search}>
+                            <div className={classes.searchIcon}>
+                                <SearchIcon />
+                            </div>
+                            <InputBase
+                                placeholder="Search…"
+                                classes={{
+                                    root: classes.inputRoot,
+                                    input: classes.inputInput,
+                                }}
+                                inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </div>
                         <div className={classes.grow} />
                         <div className={classes.sectionDesktop}>
                             <Notifications notifications={notData} />

@@ -42,21 +42,35 @@ function Profile(props) {
   };
 
   const handleFollow = async () => {
-    if(user.following.includes(profileId)){
+    if(Object.keys(user.followReqs).includes(profileId) || user.following.includes(profileId)){
       setReqLoading(true);
-      let following = user.following;
-      let Ids = following.filter(id => id != profileId);
-      await database.users.doc(user.userId).update({
-        following: Ids
-      });
-      setReqLoading(false);
+      if(user.following.includes(profileId)){
+        let following = user.following;
+        let Ids = following.filter(id => id != profileId);
+        await database.users.doc(user.userId).update({
+          following: Ids
+        });
+        setReqLoading(false);
+        await database.reqNotifications.add({
+          sender: user.userId,
+          recipient: profileId,
+          createdAt: database.getUserTimeStamp(),
+          type: "remove",
+        })
+      }else{
+        let arr = Object.keys(user.followReqs);
+        arr = arr.filter(id => id != profileId);
 
-      await database.reqNotifications.add({
-        sender: user.userId,
-        recipient: profileId,
-        createdAt: database.getUserTimeStamp(),
-        type: "remove",
-      })
+        let newReqObj = {};
+        for(let id of arr){
+          newReqObj[id] = user.followReqs[id];
+        }
+        await database.reqNotifications.doc(user.followReqs[profileId]).delete();
+        await database.users.doc(user.userId).update({
+          followReqs: newReqObj
+        });
+        setReqLoading(false);
+      }
     }else{
       setPending(true);
       setReqLoading(true);

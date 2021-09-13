@@ -10,7 +10,7 @@ import { useStateValue } from '../../context/StateProvider';
 import { database, storage } from '../../firebase/firebase.utils';
 import { ACTIONS } from '../../context/reducer';
 
-const initialState = {firstName: '', lastName: '', email: '', password: '', confirmPassword: ''};
+const initialState = {firstName: '', lastName: '', username: '', email: '', password: '', confirmPassword: ''};
 
 function Signup(props) {
     const classes = useStyles();
@@ -34,7 +34,7 @@ function Signup(props) {
         e.preventDefault();
 
         setLoader(true);
-        const { firstName, lastName, email, password, confirmPassword } = form;
+        const { firstName, lastName, username, email, password, confirmPassword } = form;
         const displayName = `${firstName} ${lastName}`
 
         if (password !== confirmPassword) {
@@ -66,6 +66,7 @@ function Signup(props) {
                 let userObj = {
                     email: email,
                     userId: uid,
+                    username,
                     displayName,
                     createdAt: database.getUserTimeStamp(),
                     profileUrl: downloadurl,
@@ -106,8 +107,9 @@ function Signup(props) {
                 </Typography>
                 <form className={classes.form} onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <CustomInput name="firstName" value={form.firstName} label="First Name" handleChange={handleChange} autoFocus half />
-                        <CustomInput name="lastName" value={form.lastName} label="Last Name" handleChange={handleChange} half />
+                        <CustomInput name="firstName" value={form.firstName} label="First Name" handleChange={handleChange} autoFocus half type="text" />
+                        <CustomInput name="lastName" value={form.lastName} label="Last Name" handleChange={handleChange} half type="text" />
+                        <CustomInput name="username" value={form.username} label="username" handleChange={handleChange} type="text" />
                         <CustomInput name="email" value={form.email} label="Email Address" handleChange={handleChange} type="email" />
                         <CustomInput name="password" value={form.password} label="Password" handleChange={handleChange} type={showPassword ? 'text' : 'password'} handleShowPassword={handleShowPassword} />
                         <CustomInput name="confirmPassword" value={form.confirmPassword} label="Repeat Password" handleChange={handleChange} type="password" /> 

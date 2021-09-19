@@ -35,9 +35,6 @@ export const useStyles = makeStyles((theme) => ({
       fontSize: "1.7em"
     }
   },
-  input: {
-    display: "none",
-  },
   purple: {
     width: "8rem",
     height: "8rem",

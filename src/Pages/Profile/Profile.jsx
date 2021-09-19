@@ -1,4 +1,5 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, Fragment, useRef } from "react";
+import ReactDOM from "react-dom";
 import {
   Avatar,
   Button,
@@ -6,18 +7,18 @@ import {
   Container,
   Grid,
   IconButton,
-  Input,
   Typography,
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import LocationOn from "@material-ui/icons/LocationOn";
 import LinkIcon from "@material-ui/icons/Link";
 import { useStateValue } from "../../context/StateProvider";
-import { database, storage } from "../../firebase/firebase.utils";
+import { database } from "../../firebase/firebase.utils";
 import Loader from "../../components/Loader/Loader";
 import { useStyles } from "./styles";
 import PostCard from "../../components/PostCard/PostCard";
 import EditDetails from "../../components/EditDetails/EditDetails";
+import UploadImage from "../../components/UploadImage/UploadImage";
 
 function Profile(props) {
   const classes = useStyles();
@@ -27,24 +28,36 @@ function Profile(props) {
   const [loading, setLoading] = useState(false);
   const [reqLoading, setReqLoading] = useState(false);
   const [pending, setPending] = useState(() => {
-    if(Object.keys(user.followReqs).includes(props.match.params.id)){
+    if (Object.keys(user.followReqs).includes(props.match.params.id)) {
       return true;
     }
     return false;
   });
   const [open, setOpen] = useState(false);
+  const [show, setShow] = useState(false);
   const [profileUser, setProfileUser] = useState(null);
   const [userPosts, setUserPosts] = useState(null);
+  const gridRef = useRef(null)
   const profileId = props.match.params.id;
 
   const handleClick = () => {
     setOpen(true);
   };
 
+  const handleImageUpload = () => {
+    setShow(true);
+  }
+
+  const handleClose = (e) => {
+    if(ReactDOM.findDOMNode(e.target).parentNode.parentNode === gridRef.current){
+      setShow(false);
+    }
+  }
+
   const handleFollow = async () => {
-    if(Object.keys(user.followReqs).includes(profileId) || user.following.includes(profileId)){
+    if (Object.keys(user.followReqs).includes(profileId) || user.following.includes(profileId)) {
       setReqLoading(true);
-      if(user.following.includes(profileId)){
+      if (user.following.includes(profileId)) {
         let following = user.following;
         let Ids = following.filter(id => id != profileId);
         await database.users.doc(user.userId).update({
@@ -57,12 +70,12 @@ function Profile(props) {
           createdAt: database.getUserTimeStamp(),
           type: "remove",
         })
-      }else{
+      } else {
         let arr = Object.keys(user.followReqs);
         arr = arr.filter(id => id != profileId);
 
         let newReqObj = {};
-        for(let id of arr){
+        for (let id of arr) {
           newReqObj[id] = user.followReqs[id];
         }
         await database.reqNotifications.doc(user.followReqs[profileId]).delete();
@@ -71,7 +84,7 @@ function Profile(props) {
         });
         setReqLoading(false);
       }
-    }else{
+    } else {
       setPending(true);
       setReqLoading(true);
       let docRef = await database.reqNotifications.add({
@@ -81,38 +94,11 @@ function Profile(props) {
         type: "request",
       })
       await database.users.doc(user.userId).update({
-        followReqs: {...user.followReqs, [profileId]: docRef.id}
+        followReqs: { ...user.followReqs, [profileId]: docRef.id }
       });
       setReqLoading(false);
     }
   }
-
-  const handleFileChange = (e) => {
-    e.preventDefault();
-    let file = e?.target?.files[0];
-    if (file != null) {
-      console.log("file ", file);
-      setLoading(true);
-    } else {
-      return;
-    }
-    storage
-      .ref()
-      .child("users")
-      .child(user.userId)
-      .child(file.name)
-      .put(file)
-      .then((response) => response.ref.getDownloadURL())
-      .then((photoURL) =>
-        database.users.doc(user.userId).update({ profileUrl: photoURL })
-      )
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((err) => {
-        alert("error occured " + err.message);
-      });
-  };
 
   useEffect(() => {
     if (profileId === user.userId) {
@@ -121,9 +107,9 @@ function Profile(props) {
       });
       fetchPosts(user);
     } else {
-      if(Object.keys(user.followReqs).includes(props.match.params.id)){
+      if (Object.keys(user.followReqs).includes(props.match.params.id)) {
         setPending(true)
-      }else{
+      } else {
         setPending(false);
       }
       fetchUser().then((userData) => fetchPosts(userData));
@@ -158,10 +144,12 @@ function Profile(props) {
         <Loader size={50} />
       ) : (
         <Grid
+          ref={gridRef}
           className={classes.main}
           container
           direction="column"
           alignItems="center"
+          onClick={handleClose}
         >
           <Grid item className={classes.submain}>
             <div className={classes.infoContainer}>
@@ -179,25 +167,15 @@ function Profile(props) {
                     {profileUser.displayName.charAt(0)}
                   </Avatar>
                 )}
-                {profileId === user.userId &&(
-                  <label htmlFor="contained-button-file">
-                    <Input
-                      className={classes.input}
-                      accept="image/*"
-                      id="contained-button-file"
-                      multiple
-                      type="file"
-                      onChange={handleFileChange}
-                    />
-                    <IconButton
-                      disabled={loading}
-                      component="span"
-                      color="secondary"
-                      className={classes.editIcon}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </label>
+                {profileId === user.userId && (
+                  <IconButton
+                    disabled={loading}
+                    color="secondary"
+                    className={classes.editIcon}
+                    onClick={handleImageUpload}
+                  >
+                    <EditIcon />
+                  </IconButton>
                 )}
               </div>
               <div className={classes.userInfo}>
@@ -221,7 +199,7 @@ function Profile(props) {
                       variant={pending ? "outlined" : "contained"}
                       disabled={reqLoading}
                     >
-                      {pending ? "pending": user.following.includes(profileId) ? "Unfollow" : "Follow"}
+                      {pending ? "pending" : user.following.includes(profileId) ? "Unfollow" : "Follow"}
                     </Button>
                   )}
                 </div>
@@ -245,7 +223,7 @@ function Profile(props) {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                         {profileUser.website}
+                          {profileUser.website}
                         </a>
                       </div>
                       <hr />
@@ -276,6 +254,7 @@ function Profile(props) {
             )}
           </Grid>
           <EditDetails open={open} setOpen={setOpen} profileId={profileId} />
+          {show && <UploadImage user={user} setLoading={setLoading} setShow={setShow} />}
         </Grid>
       )}
     </Container>
